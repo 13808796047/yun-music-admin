@@ -1,5 +1,9 @@
-<script setup>
+<script>
+export default {
+  setup(){
 
+  }
+}
 </script>
 
 <template>

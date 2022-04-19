@@ -1,10 +1,14 @@
+
 <template>
     <q-layout view="lHh Lpr lff"  class="rounded-borders">
       <q-header elevated class="bg-cyan-8">
         <q-toolbar>
           <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-          <q-toolbar-title>云音乐盒管理后台</q-toolbar-title>
-
+          <q-toolbar-title>云音乐盒管理后台{{ nicknameFirstWord }}</q-toolbar-title>
+          <q-space />
+          <q-avatar color="teal" text-color="white"
+          >{{ nicknameFirstWord }}
+          </q-avatar>
         </q-toolbar>
       </q-header>
 
@@ -59,12 +63,10 @@
         </q-scroll-area>
 
         <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-          <div class="absolute-bottom bg-transparent">
-            <q-avatar size="56px" class="q-mb-sm">
-              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+          <div class="absolute-center bg-transparent">
+            <q-avatar color="teal" text-color="white"
+            >{{ nicknameFirstWord }}
             </q-avatar>
-            <div class="text-weight-bold">Razvan Stoenescu</div>
-            <div>@rstoenescu</div>
           </div>
         </q-img>
       </q-drawer>
@@ -86,13 +88,22 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import {computed, ref} from "vue"
+import {useStore} from "vuex"
 
 export default {
   setup () {
+    const store = useStore()
     return {
-      drawer: ref(false)
+      drawer: ref(false),
+      nicknameFirstWord: computed(
+          () => store.getters.nicknameFirstWord
+      ),
     }
   }
 }
 </script>
+
+<style scoped>
+
+</style>
