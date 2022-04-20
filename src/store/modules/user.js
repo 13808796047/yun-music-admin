@@ -1,28 +1,27 @@
-import {getToken, removeToken, setToken} from "../../utils/auth.js";
-import {login} from "../../api/user.js";
+import {getCurrentUser, getToken, removeCurrentUser, removeToken, setCurrentUser, setToken} from "../../utils/auth.js";
+import {authorization} from "../../api/token.js";
+import {me} from "../../api/user.js";
 
-const state = ()=>({
-    nickname:'张三李四',
-    token:getToken(),
-    username:'',
-    roles:[]
+const state = () => ({
+    token: getToken(),
+    currentUser:getCurrentUser(),
 })
 const getters = {
-    nicknameFirstWord:state=>{
-        return state.nickname.slice(0,1)
+    currentUser:state=>{
+
+    },
+    nicknameFirstWord: state => {
+        return state.currentUser?state.currentUser.nickname.slice(0, 1):""
     }
 };
 
 const actions = {
     // user login
-    login({ commit }, {username,password}) {
+    login({commit}, {username, password}) {
         return new Promise((resolve, reject) => {
-            login(username.trim(), password ).then(response => {
-                const authorization = response.headers['authorization'];
-                commit('SET_TOKEN',authorization)
-
-                setToken(authorization)
-
+            authorization(username.trim(), password).then(token => {
+                commit('SET_TOKEN', token)
+                setToken(token)
                 resolve()
             }).catch(error => {
                 reject(error)
@@ -30,25 +29,34 @@ const actions = {
         })
     },
     // user logout
-    logout({ commit}) {
+    logout({commit}) {
         commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
+        commit('SET_CURRENT_USER', '')
         removeToken()
+        removeCurrentUser()
+    },
+    getUser({commit}) {
+        return new Promise((resolve, reject) => {
+            me().then(res => {
+                commit('SET_CURRENT_USER',res)
+                setCurrentUser(res)
+                resolve(res)
+            }).catch(error=>{
+                reject(error)
+            })
+        })
     }
 };
-const  mutations ={
+const mutations = {
     SET_TOKEN: (state, token) => {
         state.token = token;
     },
-    SET_NAME: (state, name) => {
-        state.name = name
-    },
-    SET_ROLES: (state, roles) => {
-        state.roles = roles
+    SET_CURRENT_USER:(state,currentUser)=>{
+        state.currentUser = currentUser
     }
 }
 export default {
-    namespaced:true,
+    namespaced: true,
     state,
     getters,
     actions,
